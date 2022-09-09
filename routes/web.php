@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login','Auth\AuthController@login');
-Route::post('register',"Auth\AuthController@register");
-Route::get('logout','Auth\AuthController@logout');
+Route::post('login','App\Http\Controllers\Auth\AuthController@login');
+// Route::post('register','App\Http\Controllers\Auth\AuthController@register');
+Route::get('logout','App\Http\Controllers\Auth\AuthController@logout');
 
 Route::get('/', function () {
     return response()->json('welcome', 200);

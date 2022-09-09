@@ -47,6 +47,7 @@ class AuthController extends Controller
 
             return $this->success(["user"=>$user],"Usuario registrado correctamente.");
         } catch (\Exception $e) {
+            $this->reportError($e);
             return $this->error("Ha ocurrido un error en el servidor",500,$e);
         }
     }
@@ -86,6 +87,7 @@ class AuthController extends Controller
                                         "message"=>"Las credenciales son incorrectas"]);
             }
         } catch (JWTException $e) {
+            $this->reportError($e);
             return response()->json(['error' => 'Ha ocurrido un error en el servidor'], 500);
         }
 
@@ -102,18 +104,21 @@ class AuthController extends Controller
             JWTAuth::parseToken()->invalidate( $token );
             return $this->success([],'Se ha cerrado la sesión correctamente');
         } catch ( TokenExpiredException $exception ) {
+            $this->reportError($exception);
             return response()->json( [
                 'error'   => true,
                 'message' => trans( 'Token expirado' )
 
             ], 401 );
         } catch ( TokenInvalidException $exception ) {
+            $this->reportError($exception);
             return response()->json( [
                 'error'   => true,
                 'message' => 'Token inválido'
             ], 401 );
 
         } catch ( JWTException $exception ) {
+            $this->reportError($exception);
             return response()->json( [
                 'error'   => true,
                 'message' => trans( 'Falta el token' )

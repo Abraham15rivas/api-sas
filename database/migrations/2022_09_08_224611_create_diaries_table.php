@@ -15,6 +15,27 @@ class CreateDiariesTable extends Migration
     {
         Schema::create('diaries', function (Blueprint $table) {
             $table->id();
+            $table->timestamp('datetime');
+            $table->text('activities');
+            $table->text('objectives');
+            $table->text('description');
+            $table->string('state');
+            $table->string('municipality');
+            $table->string('place');
+            $table->enum('wingspan', ['Ministerial', 'Vicepresidencia Sectorial', 'Vicepresidencia Ejecutiva', 'Presidencial']);
+            $table->text('observation');
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreignId('institution_id')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }
