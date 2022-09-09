@@ -15,8 +15,13 @@ class InstitutionSeeder extends Seeder
     public function run()
     {
         Institution::create([
-            'name'      => 'Mincy',
+            'name'      => 'Investigaciones',
             'rif'       =>  '12345678',
+        ]);
+
+        Institution::create([
+            'name'      => 'Telecomunicaciones',
+            'rif'       =>  '123456789',
         ]);
     }
 }
