@@ -23,7 +23,7 @@ class Diary extends Model
         'wingspan',
         'observation',
         'user_id',
-        'institution_id',
+        'institution_id'
     ];
 
     public function user () {

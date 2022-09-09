@@ -1,19 +1,25 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+// Class Controllers
+use App\Http\Controllers\Diary\DiaryController;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Group route: User Auth
+Route::middleware('auth.jwt')->group(function () {
+    // Group route: v1
+    Route::prefix('v1')->group(function () {
+        // Group route: Admin
+        Route::group([
+            'prefix'     => 'admin',
+            'middleware' => 'admin',
+        ], function () {
+            // Diary
+            Route::get('diaries', [DiaryController::class, 'index']);
+            Route::post('diary', [DiaryController::class, 'store']);
+            Route::get('diary/{id}', [DiaryController::class, 'show']);
+            Route::put('diary/{id}', [DiaryController::class, 'update']);
+            Route::delete('diary/{diary}', [DiaryController::class, 'destroy']);
+        });
+    });
 });
