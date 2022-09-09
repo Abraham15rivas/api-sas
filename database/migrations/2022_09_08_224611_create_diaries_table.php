@@ -22,6 +22,7 @@ class CreateDiariesTable extends Migration
             $table->string('state');
             $table->string('municipality');
             $table->string('place');
+            $table->boolean('executed');
             $table->enum('wingspan', ['Ministerial', 'Vicepresidencia Sectorial', 'Vicepresidencia Ejecutiva', 'Presidencial']);
             $table->text('observation');
 
