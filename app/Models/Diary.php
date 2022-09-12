@@ -14,12 +14,13 @@ class Diary extends Model
 
     protected $fillable = [
         'datetime',
-        'activities',
-        'objectives',
+        'activity',
+        'objective',
         'description',
         'state',
         'municipality',
         'place',
+        'executed',
         'wingspan',
         'observation',
         'user_id',
