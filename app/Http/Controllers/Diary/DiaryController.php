@@ -30,7 +30,7 @@ class DiaryController extends Controller
         'place'         => 'required|string',
         'executed'      => 'required|boolean',
         'wingspan'      => 'required|in:Ministerial,Vicepresidencia Sectorial,Vicepresidencia Ejecutiva,Presidencial,No aplica',
-        'observation'   => 'required|string'
+        'observation'   => 'nullable|string'
     ];
 
     private function countOfActivitiesOfTheWeek() {
@@ -217,5 +217,9 @@ class DiaryController extends Controller
         }
 
         return $this->success([], 'done', 200);
+    }
+
+    public function exportReportExcel(Request $request) {
+        return 'hola';
     }
 }

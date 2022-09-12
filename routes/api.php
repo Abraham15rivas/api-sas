@@ -20,6 +20,9 @@ Route::middleware('auth.jwt')->group(function () {
             Route::get('diary/{id}', [DiaryController::class, 'show']);
             Route::put('diary/{id}', [DiaryController::class, 'update']);
             Route::delete('diary/{diary}', [DiaryController::class, 'destroy']);
+
+            // export report format excel
+            Route::get('report/diary', [DiaryController::class, 'exportReportExcel']);
         });
     });
 });
