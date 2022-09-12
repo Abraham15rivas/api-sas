@@ -24,7 +24,7 @@ class CreateDiariesTable extends Migration
             $table->string('place');
             $table->boolean('executed');
             $table->enum('wingspan', ['Ministerial', 'Vicepresidencia Sectorial', 'Vicepresidencia Ejecutiva', 'Presidencial', 'No aplica']);
-            $table->text('observation');
+            $table->text('observation')->nullable();
 
             $table->foreignId('user_id')
                 ->constrained()
