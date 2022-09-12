@@ -16,14 +16,14 @@ class CreateDiariesTable extends Migration
         Schema::create('diaries', function (Blueprint $table) {
             $table->id();
             $table->timestamp('datetime');
-            $table->text('activities');
-            $table->text('objectives');
+            $table->text('activity');
+            $table->text('objective');
             $table->text('description');
             $table->string('state');
             $table->string('municipality');
             $table->string('place');
             $table->boolean('executed');
-            $table->enum('wingspan', ['Ministerial', 'Vicepresidencia Sectorial', 'Vicepresidencia Ejecutiva', 'Presidencial']);
+            $table->enum('wingspan', ['Ministerial', 'Vicepresidencia Sectorial', 'Vicepresidencia Ejecutiva', 'Presidencial', 'No aplica']);
             $table->text('observation');
 
             $table->foreignId('user_id')
