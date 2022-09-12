@@ -40,7 +40,7 @@ class DiaryController extends Controller
             $this->dateNow      = Carbon::now();
             $this->startOfWeek  = $this->dateNow->startOfWeek()->format('Y-m-d H:i:s');
             $this->endtOfWeek   = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
-    
+
             $planned = Diary::
                 whereBetween(
                     DB::raw("datetime AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
@@ -53,12 +53,12 @@ class DiaryController extends Controller
                 )
                 ->where('executed', true)
                 ->get();
-    
+
             if ($planned->count() >= 5) {
                 $result->planned['limit']   = true;
                 $result->planned['message'] = 'Supera el limite semanal de actividades planificadas';
             }
-    
+
             if ($executed->count() >= 5) {
                 $result->executed['limit']      = true;
                 $result->executed['message']    = 'Supera el limite semanal de actividades ejecutadas';
@@ -100,23 +100,23 @@ class DiaryController extends Controller
         $validator = Validator::make($request->all(), $this->validatorRules);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json(["success"=>false, $validator->errors()]);
         }
 
         $response = $this->countOfActivitiesOfTheWeek();
 
         if (isset($response->planned) && $response->planned['limit']) {
             if (isset($response->executed) && $response->executed['limit']) {
-                return $this->success($response, 'Supero el limite de actividades de la semana', 200);
+                return $this->error('Superó el límite de actividades de la semana', 200, $response);
             }
         }
 
         if ($request->executed == false && isset($response->planned) && $response->planned['limit']) {
-            return $this->success($response, 'Supero el limite de actividades planificadas por semana', 200);
+            return $this->error('Superó el límite de actividades planificadas por semana', 200, $response);
         }
 
         if ($request->executed == true && isset($response->executed) && $response->executed['limit']) {
-            return $this->success($response, 'Supero el limite de actividades ejecutadas por semana', 200);
+            return $this->error('Superó el límite de actividades ejecutadas por semana', 200, $response);
         }
 
         DB::beginTransaction();
@@ -144,7 +144,7 @@ class DiaryController extends Controller
             return  response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
         }
 
-        return response()->json('done');
+        return $this->success($diary,"Se ha guardado correctamente el registro de actividad");
     }
 
     public function show($id) {
