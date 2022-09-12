@@ -12,7 +12,7 @@ use Maatwebsite\Excel\Concerns\{
     WithStyles
 };
 
-class DairyExportSheet implements 
+class DiaryExportSheet implements 
     FromArray, 
     WithTitle, 
     WithMapping, 
