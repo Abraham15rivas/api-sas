@@ -4,9 +4,9 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
-use App\Exports\Sheets\DairyExportSheet;
+use App\Exports\Sheets\DiaryExportSheet;
 
-class DairyExport implements WithMultipleSheets
+class DiaryExport implements WithMultipleSheets
 {
     use Exportable;
 
@@ -25,7 +25,7 @@ class DairyExport implements WithMultipleSheets
         $sheets = [];
         $key = 0;
         foreach($this->dairies as $dairy) {
-            $sheets[] = new DairyExportSheet($dairy, $this->nameSheets[$key], $this->headers);
+            $sheets[] = new DiaryExportSheet($dairy, $this->nameSheets[$key], $this->headers);
             $key++;
         }
         return $sheets;
