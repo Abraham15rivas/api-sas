@@ -43,25 +43,23 @@ class DiaryController extends Controller
 
             $planned = Diary::
                 whereBetween(
-                    DB::raw("datetime AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
+                    DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
                 )
                 ->where('executed', false)
                 ->get();
 
             $executed = Diary::whereBetween(
-                    DB::raw("datetime AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
+                    DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
                 )
                 ->where('executed', true)
                 ->get();
 
             if ($planned->count() >= 5) {
-                $result->planned['limit']   = true;
-                $result->planned['message'] = 'Supera el limite semanal de actividades planificadas';
+                $result->planned['limit'] = true;
             }
 
             if ($executed->count() >= 5) {
-                $result->executed['limit']      = true;
-                $result->executed['message']    = 'Supera el limite semanal de actividades ejecutadas';
+                $result->executed['limit'] = true;
             }
         } catch (\Exception $e) {
             $this->reportError($e);
