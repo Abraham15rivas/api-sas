@@ -62,7 +62,7 @@ class User extends Authenticatable implements JWTSubject
     public function institution() {
         return $this->belongsTo(Institution::class);
     }
-    
+
     public function diaries () {
         return $this->hasMany(Diary::class);
     }

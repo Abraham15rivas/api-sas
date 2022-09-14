@@ -72,9 +72,9 @@ class DiaryController extends Controller
         return $result;
     }
 
-    public function index() {
+    public function index(Request $request) {
         try {
-            $diaries = Diary::select(
+            $query = Diary::select(
                 'datetime',
                 'activity',
                 'objective',
@@ -85,16 +85,37 @@ class DiaryController extends Controller
                 'executed',
                 'wingspan',
                 'observation',
+                'created_at',
                 'user_id',
                 'institution_id'
             )
-            ->get();
+            ->with('user');
+
+            if (isset($request["beginDate"]) && isset($request["endDate"])) {
+                $query->whereBetween('created_at', [$request["beginDate"], $request["endDate"]]);
+            }
+
+            if (isset($request["range"]) && $request["range"] != "Todas") {
+                $query->where('wingspan', $request["range"]);
+            }
+
+            if (isset($request["sector"]) && $request["sector"] != 0) {
+                $query->where('institution_id', $request["sector"]);
+            }
+
+            if (isset($request["type"]) && $request["type"] != 2) {
+                $query->where('executed', $request["type"]);
+            }
+
+            $diaries = $query->get();
+
+
+            return $this->success($diaries, 'List diaries', 200);
         } catch (\Exception $e) {
             $this->reportError($e);
             return  response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
         }
 
-        return $this->success($diaries, 'List diaries', 200);
     }
 
     public function indexByUser(Request $request) {
