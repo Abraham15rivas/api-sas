@@ -15,6 +15,7 @@ Route::middleware('auth.jwt')->group(function () {
             'middleware' => 'admin',
         ], function () {
             // Diary
+            Route::get('diaries-self', [DiaryController::class, 'indexByUser']);
             Route::get('diaries', [DiaryController::class, 'index']);
             Route::post('diary', [DiaryController::class, 'store']);
             Route::get('diary/{id}', [DiaryController::class, 'show']);
