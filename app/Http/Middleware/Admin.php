@@ -19,9 +19,9 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->ajax()) {
-            return $this->error('Bad Request', 400);
-        }
+        // if (!$request->ajax()) {
+        //     return $this->error('Bad Request', 400);
+        // }
 
         $userRole = $request->user()->role_id;
 

@@ -19,6 +19,7 @@ class DiaryController extends Controller
     protected $dateNow;
     protected $startOfWeek;
     protected $endtOfWeek;
+    protected $user;
 
     protected $validatorRules = [
         'datetime'      => 'required|date',
@@ -46,12 +47,14 @@ class DiaryController extends Controller
                     DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
                 )
                 ->where('executed', false)
+                ->where('user_id',  $this->user->id)
                 ->get();
 
             $executed = Diary::whereBetween(
                     DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
                 )
                 ->where('executed', true)
+                ->where('user_id',  $this->user->id)
                 ->get();
 
             if ($planned->count() >= 5) {
@@ -94,12 +97,42 @@ class DiaryController extends Controller
         return $this->success($diaries, 'List diaries', 200);
     }
 
+    public function indexByUser(Request $request) {
+        try {
+            $selfDiaries = $request
+                ->user()
+                ->diaries()
+                ->select(
+                    'datetime',
+                    'activity',
+                    'objective',
+                    'description',
+                    'state',
+                    'municipality',
+                    'place',
+                    'executed',
+                    'wingspan',
+                    'observation',
+                    'user_id',
+                    'institution_id'
+                )
+                ->get();
+        } catch (\Exception $e) {
+            $this->reportError($e);
+            return  response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
+        }
+
+        return $this->success($selfDiaries, 'List diaries user', 200);
+    }
+
     public function store(Request $request) {
         $validator = Validator::make($request->all(), $this->validatorRules);
 
         if ($validator->fails()) {
             return response()->json(["success"=>false, $validator->errors()]);
         }
+
+        $this->user = $request->user();
 
         $response = $this->countOfActivitiesOfTheWeek();
 
@@ -131,8 +164,8 @@ class DiaryController extends Controller
             $diary->executed        = $request->executed;
             $diary->observation     = $request->observation;
             $diary->wingspan        = $request->wingspan;
-            $diary->user_id         = $request->user()->id;
-            $diary->institution_id  = $request->user()->institution_id;
+            $diary->user_id         = $this->user->id;
+            $diary->institution_id  = $this->user->institution_id;
             $diary->save();
 
             DB::commit();
