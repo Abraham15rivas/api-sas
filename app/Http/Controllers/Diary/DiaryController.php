@@ -42,28 +42,24 @@ class DiaryController extends Controller
             $this->startOfWeek  = $this->dateNow->startOfWeek()->format('Y-m-d H:i:s');
             $this->endtOfWeek   = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
 
-            $planned = Diary::
-                whereBetween(
+            $planned = Diary::select('id')
+                ->whereBetween(
                     DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
                 )
                 ->where('executed', false)
                 ->where('user_id',  $this->user->id)
                 ->get();
 
-            $executed = Diary::whereBetween(
+            $executed = Diary::select('id')
+                ->whereBetween(
                     DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
                 )
                 ->where('executed', true)
                 ->where('user_id',  $this->user->id)
                 ->get();
 
-            if ($planned->count() >= 5) {
-                $result->planned['limit'] = true;
-            }
-
-            if ($executed->count() >= 5) {
-                $result->executed['limit'] = true;
-            }
+            $result->planned['limit']   = $planned->count() >= 5;
+            $result->executed['limit']  = $executed->count() >= 5;
         } catch (\Exception $e) {
             $this->reportError($e);
             return  response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
