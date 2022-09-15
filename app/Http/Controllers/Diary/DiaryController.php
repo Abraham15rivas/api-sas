@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Traits\ApiResponser;
+use App\Exports\DiaryExport;
 use Carbon\Carbon;
 use App\Models\{
     Diary
@@ -264,10 +265,81 @@ class DiaryController extends Controller
             return response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
         }
 
-        return $this->success([], 'done', 200);
+        return $this->success([], 'Eliminado correctamente.', 200);
     }
 
     public function exportReportExcel(Request $request) {
-        return 'hola';
+        try {
+            $allData    = (array) [];
+            $planned    = (array) [];
+            $executed   = (array) [];
+
+            $headers = (array) [
+                'NRO.',
+                'FECHA',
+                'ACTIVIDAD',
+                'OBJETIVO',
+                'DESCRIPCION',
+                'ESTADO',
+                'MUNICIPIO',
+                'LUGAR',
+                'HORA',
+                'ENVERGADURA',
+                'OBSERVACIONES'
+            ];
+    
+            if ($request->has('start') && $request->has('end')) {
+                $start  = Carbon::parse($request->start)->format('Y-m-d H:i:s');
+                $end    = Carbon::parse($request->end)->format('Y-m-d H:i:s');
+            } else {
+                $this->dateNow = Carbon::now();
+
+                $start  = $this->dateNow->startOfWeek()->format('Y-m-d H:i:s');
+                $end    = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
+            }
+
+            $diaries = Diary::select(
+                'id',
+                DB::raw('date(datetime) as "date"'),
+                'activity',
+                'objective',
+                'description',
+                'state',
+                'municipality',
+                'place',
+                DB::raw("to_char(datetime, 'HH12:MI:SS') as time"),
+                'wingspan',
+                'observation',
+                'executed'
+            )
+            ->whereBetween(
+                DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$start, $end]
+            )
+            ->get();
+
+            $executed = $diaries->where('executed', true)
+                ->values()
+                ->toArray();
+
+            $planned = $diaries->where('executed', false)
+                ->values()
+                ->toArray();
+
+            array_push($allData, $executed);
+            array_push($allData, $planned);
+        } catch (\Exception $e) {
+            $this->reportError($e);
+            return response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
+        }
+
+        $titleReport = "Agenda VICEPRESIDENCIA SOCIAL_DVIAC";
+        $reportExcel = (new DiaryExport($allData, $headers))->download("$titleReport.xlsx");
+
+        return $reportExcel;
+
+        // return response([
+        //     "success"=>true,
+        //     "data" => 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,'.base64_encode($reportExcel)
+        // ],200);
     }
 }

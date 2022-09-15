@@ -12,7 +12,7 @@ class DiaryExport implements WithMultipleSheets
 
     private $dairies;
     private $headers;
-    private $nameSheets = ['Pendientes', 'Ejecutadas'];
+    private $nameSheets = ['Ejecutada', 'planificada'];
 
     public function __construct($dairies = null, $headers)
     {
