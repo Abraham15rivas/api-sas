@@ -2,6 +2,7 @@
 
 namespace App\Exports\Sheets;
 
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\{
     FromArray,
     WithTitle,
