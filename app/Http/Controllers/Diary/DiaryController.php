@@ -288,10 +288,14 @@ class DiaryController extends Controller
                 'OBSERVACIONES'
             ];
     
-            if (!$request->has('start') && !$request->has('end')) {
-                $this->dateNow      = Carbon::now();
-                $this->startOfWeek  = $this->dateNow->startOfWeek()->format('Y-m-d H:i:s');
-                $this->endtOfWeek   = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
+            if ($request->has('start') && $request->has('end')) {
+                $start  = Carbon::parse($request->start)->format('Y-m-d H:i:s');
+                $end    = Carbon::parse($request->end)->format('Y-m-d H:i:s');
+            } else {
+                $this->dateNow = Carbon::now();
+
+                $start  = $this->dateNow->startOfWeek()->format('Y-m-d H:i:s');
+                $end    = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
             }
 
             $diaries = Diary::select(
@@ -309,7 +313,7 @@ class DiaryController extends Controller
                 'executed'
             )
             ->whereBetween(
-                DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
+                DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$start, $end]
             )
             ->get();
 
