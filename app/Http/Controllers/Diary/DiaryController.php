@@ -355,9 +355,6 @@ class DiaryController extends Controller
             return response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
         }
 
-        $titleReport = "Agenda VICEPRESIDENCIA SOCIAL_DVIAC";
-        $reportExcel = (new DiaryExport($allData, $headers))->download("$titleReport.xlsx");
-
-        return $reportExcel;
+        return (new DiaryExport($allData, $headers))->download("Agenda VICEPRESIDENCIA SOCIAL_DVIAC.xlsx");
     }
 }
