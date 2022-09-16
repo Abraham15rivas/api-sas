@@ -72,6 +72,7 @@ class DiaryController extends Controller
     public function index(Request $request) {
         try {
             $query = Diary::select(
+                'id',
                 'datetime',
                 'activity',
                 'objective',
@@ -121,6 +122,7 @@ class DiaryController extends Controller
                 ->user()
                 ->diaries()
                 ->select(
+                    'id',
                     'datetime',
                     'activity',
                     'objective',

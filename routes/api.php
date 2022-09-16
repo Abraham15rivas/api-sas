@@ -15,15 +15,15 @@ Route::middleware('auth.jwt')->group(function () {
             'middleware' => 'admin',
         ], function () {
             // Diary
-            Route::post('diaries-self', [DiaryController::class, 'indexByUser']);
             Route::post('diaries', [DiaryController::class, 'index']);
-            Route::post('diary', [DiaryController::class, 'store']);
-            Route::get('diary/{id}', [DiaryController::class, 'show']);
-            Route::put('diary/{id}', [DiaryController::class, 'update']);
-            Route::delete('diary/{diary}', [DiaryController::class, 'destroy']);
-
+            
             // export report format excel
             Route::post('report/diary', [DiaryController::class, 'exportReportExcel']);
         });
+        Route::post('diaries-self', [DiaryController::class, 'indexByUser']);
+        Route::get('diary/{id}', [DiaryController::class, 'show']);
+        Route::post('diary', [DiaryController::class, 'store']);
+        Route::put('diary/{id}', [DiaryController::class, 'update']);
+        Route::delete('diary/{diary}', [DiaryController::class, 'destroy']);
     });
 });

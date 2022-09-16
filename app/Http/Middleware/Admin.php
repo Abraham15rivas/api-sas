@@ -28,7 +28,7 @@ class Admin
         if (intval($userRole) === 1) {
             return $next($request);
         } else {
-            return  response()->json($this->error('No tiene los permisos necesarios para acceder a los recursos solicitados', 403));
+            return  response()->json(["success"=>false,"message"=>'No tiene los permisos necesarios para acceder a los recursos solicitados'], 403);
         }
     }
 }
