@@ -23,7 +23,7 @@ Route::middleware('auth.jwt')->group(function () {
             Route::delete('diary/{diary}', [DiaryController::class, 'destroy']);
 
             // export report format excel
-            Route::get('report/diary', [DiaryController::class, 'exportReportExcel']);
+            Route::post('report/diary', [DiaryController::class, 'exportReportExcel']);
         });
     });
 });

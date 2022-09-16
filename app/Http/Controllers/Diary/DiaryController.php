@@ -117,7 +117,7 @@ class DiaryController extends Controller
 
     public function indexByUser(Request $request) {
         try {
-            $selfDiaries = $request
+            $query = $request
                 ->user()
                 ->diaries()
                 ->select(
@@ -132,9 +132,23 @@ class DiaryController extends Controller
                     'wingspan',
                     'observation',
                     'user_id',
+                    'created_at',
                     'institution_id'
-                )
-                ->get();
+                );
+
+                if (isset($request["beginDate"]) && isset($request["endDate"])) {
+                    $query->whereBetween('created_at', [$request["beginDate"], $request["endDate"]]);
+                }
+    
+                if (isset($request["range"]) && $request["range"] != "Todas") {
+                    $query->where('wingspan', $request["range"]);
+                }
+    
+                if (isset($request["type"]) && $request["type"] != 2) {
+                    $query->where('executed', $request["type"]);
+                }
+
+                $selfDiaries = $query->get();
         } catch (\Exception $e) {
             $this->reportError($e);
             return  response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
@@ -298,7 +312,7 @@ class DiaryController extends Controller
                 $end    = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
             }
 
-            $diaries = Diary::select(
+            $query = Diary::select(
                 'id',
                 DB::raw('date(datetime) as "date"'),
                 'activity',
@@ -311,11 +325,20 @@ class DiaryController extends Controller
                 'wingspan',
                 'observation',
                 'executed'
-            )
-            ->whereBetween(
+            );
+
+            if (isset($request["sector"])) {
+                $query->where('institution_id', $request["sector"]);
+            } else {
+                $query->where('institution_id', 1);
+            }
+            
+            $query->whereBetween(
                 DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$start, $end]
-            )
-            ->get();
+            );
+
+
+            $diaries = $query->get();
 
             $executed = $diaries->where('executed', true)
                 ->values()
@@ -336,10 +359,5 @@ class DiaryController extends Controller
         $reportExcel = (new DiaryExport($allData, $headers))->download("$titleReport.xlsx");
 
         return $reportExcel;
-
-        // return response([
-        //     "success"=>true,
-        //     "data" => 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,'.base64_encode($reportExcel)
-        // ],200);
     }
 }
