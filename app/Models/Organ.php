@@ -8,15 +8,20 @@ use Illuminate\Database\Eloquent\{
     SoftDeletes
 };
 
-class Role extends Model
+class Organ extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name'
+        'name',
+        'institution_id'
     ];
 
     public function users() {
         return $this->hasMany(User::class);
+    }
+
+    public function institution() {
+        return $this->belongsTo(Institution::class);
     }
 }

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Diary;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{
+    Validator, 
+    DB
+};
 use App\Traits\ApiResponser;
 use App\Exports\DiaryExport;
 use Carbon\Carbon;
@@ -44,17 +46,13 @@ class DiaryController extends Controller
             $this->endtOfWeek   = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
 
             $planned = Diary::select('id')
-                ->whereBetween(
-                    DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
-                )
+                ->whereBetween('created_at', [$this->startOfWeek, $this->endtOfWeek])
                 ->where('executed', false)
                 ->where('user_id',  $this->user->id)
                 ->get();
 
             $executed = Diary::select('id')
-                ->whereBetween(
-                    DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$this->startOfWeek, $this->endtOfWeek]
-                )
+                ->whereBetween('created_at', [$this->startOfWeek, $this->endtOfWeek])
                 ->where('executed', true)
                 ->where('user_id',  $this->user->id)
                 ->get();
@@ -334,11 +332,8 @@ class DiaryController extends Controller
             } else {
                 $query->where('institution_id', 1);
             }
-            
-            $query->whereBetween(
-                DB::raw("created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Caracas'"), [$start, $end]
-            );
 
+            $query->whereBetween('created_at', [$start, $end]);
 
             $diaries = $query->get();
 
