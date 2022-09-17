@@ -17,7 +17,7 @@ class Institution extends Model
         'rif'
     ];
 
-    public function users () {
+    public function users() {
         return $this->hasMany(User::class);
     }
 }
