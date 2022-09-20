@@ -263,10 +263,10 @@ class DiaryController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $this->reportError($e);
-            return response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
+            return $this->error("Ha ocurrido un error en el servidor", 500, $e);
         }
 
-        return response()->json('done');
+        return $this->success($diary,"Se ha actualizado correctamente la actividad");;
     }
 
     public function destroy(Diary $diary) {
