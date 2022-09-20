@@ -287,19 +287,20 @@ class DiaryController extends Controller
             $allData    = (array) [];
             $planned    = (array) [];
             $executed   = (array) [];
+            $mainTitle  = null;
 
             $headers = (array) [
-                'NRO.',
-                'FECHA',
-                'ACTIVIDAD',
-                'OBJETIVO',
-                'DESCRIPCION',
-                'ESTADO',
-                'MUNICIPIO',
-                'LUGAR',
-                'HORA',
-                'ENVERGADURA',
-                'OBSERVACIONES'
+                'Nro.',
+                'Fecha',
+                'Actividad',
+                'Objetivo',
+                'Descripción',
+                'Estado',
+                'Municipio',
+                'Lugar',
+                'Hora',
+                'Envergadura',
+                'Observaciones'
             ];
     
             if ($request->has('start') && $request->has('end')) {
@@ -307,10 +308,11 @@ class DiaryController extends Controller
                 $end    = Carbon::parse($request->end)->format('Y-m-d H:i:s');
             } else {
                 $this->dateNow = Carbon::now();
-
                 $start  = $this->dateNow->startOfWeek()->format('Y-m-d H:i:s');
                 $end    = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
             }
+
+            $mainTitle = 'DEL ' . Carbon::parse($start)->translatedFormat('l j F,') . ' AL ' . Carbon::parse($end)->translatedFormat('l j F Y') ;
 
             $query = Diary::select(
                 'id',
@@ -347,11 +349,24 @@ class DiaryController extends Controller
 
             array_push($allData, $executed);
             array_push($allData, $planned);
+
+            if (empty($executed) && empty($planned)) {
+                return $this->error('No hay datos para mostrar en el rango de fecha seleccionado, por favor intente con un rango de fecha diferente', 200, []);
+            }
         } catch (\Exception $e) {
             $this->reportError($e);
             return response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
         }
 
-        return (new DiaryExport($allData, $headers))->download("Agenda VICEPRESIDENCIA SOCIAL_DVIAC.xlsx");
+        // Archivo procesado
+        return (new DiaryExport($allData, $headers, $mainTitle))->download("Agenda VICEPRESIDENCIA SOCIAL_DVIAC.xlsx");
+
+        // Archivo sin procesar
+        // $contents = (new DiaryExport($allData, $headers, $mainTitle))->raw();
+
+        // return response([
+        //     'success' => true,
+        //     'data' => 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' . base64_encode($contents)
+        // ], 200);
     }
 }
