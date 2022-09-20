@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Diary;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{
-    Validator, 
+    Validator,
     DB
 };
 use App\Traits\ApiResponser;
@@ -139,11 +139,11 @@ class DiaryController extends Controller
                 if (isset($request["beginDate"]) && isset($request["endDate"])) {
                     $query->whereBetween('created_at', [$request["beginDate"], $request["endDate"]]);
                 }
-    
+
                 if (isset($request["range"]) && $request["range"] != "Todas") {
                     $query->where('wingspan', $request["range"]);
                 }
-    
+
                 if (isset($request["type"]) && $request["type"] != 2) {
                     $query->where('executed', $request["type"]);
                 }
@@ -290,7 +290,7 @@ class DiaryController extends Controller
             $mainTitle  = null;
 
             $headers = (array) [
-                'Nro.',
+                'Id',
                 'Fecha',
                 'Actividad',
                 'Objetivo',
@@ -302,7 +302,7 @@ class DiaryController extends Controller
                 'Envergadura',
                 'Observaciones'
             ];
-    
+
             if ($request->has('start') && $request->has('end')) {
                 $start  = Carbon::parse($request->start)->format('Y-m-d H:i:s');
                 $end    = Carbon::parse($request->end)->format('Y-m-d H:i:s');
@@ -312,7 +312,7 @@ class DiaryController extends Controller
                 $end    = $this->dateNow->endOfWeek()->format('Y-m-d H:i:s');
             }
 
-            $mainTitle = 'DEL ' . Carbon::parse($start)->translatedFormat('l j F,') . ' AL ' . Carbon::parse($end)->translatedFormat('l j F Y') ;
+            $mainTitle = 'Del ' . Carbon::parse($start)->translatedFormat('l j F,') . ' al ' . Carbon::parse($end)->translatedFormat('l j F Y') ;
 
             $query = Diary::select(
                 'id',
@@ -355,18 +355,18 @@ class DiaryController extends Controller
             }
         } catch (\Exception $e) {
             $this->reportError($e);
-            return response()->json($this->error("Ha ocurrido un error en el servidor", 500, $e));
+            return $this->error("Ha ocurrido un error en el servidor", 500, $e);
         }
 
         // Archivo procesado
-        return (new DiaryExport($allData, $headers, $mainTitle))->download("Agenda VICEPRESIDENCIA SOCIAL_DVIAC.xlsx");
+        //return (new DiaryExport($allData, $headers, $mainTitle))->download("Agenda VICEPRESIDENCIA SOCIAL_DVIAC.xlsx");
 
         // Archivo sin procesar
-        // $contents = (new DiaryExport($allData, $headers, $mainTitle))->raw();
+        $contents = (new DiaryExport($allData, $headers, $mainTitle))->raw();
 
-        // return response([
-        //     'success' => true,
-        //     'data' => 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' . base64_encode($contents)
-        // ], 200);
+        return response([
+            'success' => true,
+            'data' => 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' . base64_encode($contents)
+        ], 200);
     }
 }
