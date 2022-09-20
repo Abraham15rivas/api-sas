@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
     {
         $users = [
             // Admin
-            ['admin', 'admin@test.com', '04241313435', 'secret123', 1, 1, 7],
+            ['admin', 'admin@agenda.com', '04241313435', 'secret123', 1, 1, 7],
 
             // Investigacion
             ['ACAV', 'acav@agenda.com', '04123882903', 'acav*123', 2, 1, 1],
@@ -70,10 +70,5 @@ class UserSeeder extends Seeder
                 'organ_id'      => $user[6]
             ]);
         }
-
-        // Evaluar posibilidad de colocar usuarios con mas de un organo, es decir, 
-        // relacion muchos a muchos entre el modelo user <-> organ... proximo update
-        // Tambien agregar la posibilidad de almacenar mas de un telefono, ya que la mayoria de los
-        // usuarios posen hasta tres telefonos
     }
 }
