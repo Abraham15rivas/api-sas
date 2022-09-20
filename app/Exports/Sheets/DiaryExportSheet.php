@@ -10,7 +10,6 @@ use Maatwebsite\Excel\Concerns\{
     WithMapping,
     WithHeadings,
     WithStrictNullComparison,
-    // ShouldAutoSize,
     WithStyles,
     WithCustomStartCell,
     WithEvents
@@ -22,7 +21,6 @@ class DiaryExportSheet implements
     WithMapping, 
     WithHeadings, 
     WithStrictNullComparison,
-    // ShouldAutoSize,
     WithStyles,
     WithCustomStartCell,
     WithEvents
@@ -89,9 +87,9 @@ class DiaryExportSheet implements
         return [
             AfterSheet::class => function(AfterSheet $event) {
                 // Titulo
-                $event->sheet->mergeCells('A3:K3');
-                $event->sheet->mergeCells('A4:K4');
-                $event->sheet->mergeCells('A5:K5');
+                for ($i = 3; $i <= 5; $i++) {
+                    $event->sheet->mergeCells("A$i:K$i");
+                }
 
                 // Height celda (Altura)
                 $event->sheet->getDelegate()->getRowDimension('7')->setRowHeight(100);
@@ -103,22 +101,21 @@ class DiaryExportSheet implements
                 // No funcionan cuando la clase ShouldAutoSize esta implementada
                 $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(8);
                 $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(20);
-                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(40);
+                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(60);
+                $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(50);
                 $event->sheet->getDelegate()->getColumnDimension('E')->setWidth(80);
                 $event->sheet->getDelegate()->getColumnDimension('F')->setWidth(20);
                 $event->sheet->getDelegate()->getColumnDimension('G')->setWidth(25);
                 $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(25);
                 $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(20);
                 $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(40);
-                $event->sheet->getDelegate()->getColumnDimension('K')->setWidth(40);
+                $event->sheet->getDelegate()->getColumnDimension('K')->setWidth(50);
             },
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        
         $countCells = (count($this->diaries) + 7);
         $range      = "A8:K$countCells";
         $rangeBorder= "A7:K$countCells";
@@ -171,7 +168,8 @@ class DiaryExportSheet implements
         $data["$rangeBorder"] = [
             'alignment' => [
                 'horizontal' => 'center',
-                'vertical' => 'center'
+                'vertical' => 'center',
+                'wrapText' => true
             ],
             'borders' => [
                 'allBorders' => [
